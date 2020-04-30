@@ -6,7 +6,7 @@ The dockerfile is automatically rebuilt on dockerhub when changes are pushed to 
 To build dockerfile locally
 
 ```
-sudo docker build -t openmcworkshop/paramak . 
+sudo docker build -t openmcworkshop/paramak_dependencies . 
 
 xhost local:root
 
