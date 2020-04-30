@@ -12,3 +12,4 @@ xhost local:root
 
 sudo docker run -it --rm -v /tmp/.X11-unix:/tmp/.X11-unix -v $PWD:/home -e DISPLAY=unix$DISPLAY --privileged openmcworkshop/paramak
 ```
+The status of the automatic dockerhub build can be viewed [here](https://hub.docker.com/repository/docker/openmcworkshop/paramak_dependencies/general)
