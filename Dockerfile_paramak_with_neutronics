@@ -1,0 +1,147 @@
+# build with the following command
+# sudo docker build -f Dockerfile_paramak_with_neutronics -t paramak_with_neutronics .
+
+# Run with the following command
+# sudo docker run -it paramak_with_neutronics
+
+# We will use Ubuntu for our image
+FROM ubuntu:18.04
+
+# Updating Ubuntu packages
+RUN apt-get update && yes|apt-get upgrade
+
+RUN apt-get --yes update && apt-get --yes upgrade
+
+RUN apt-get -y install locales
+RUN locale-gen en_US.UTF-8
+ENV LC_CTYPE en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+
+RUN apt-get --yes update && apt-get --yes upgrade
+
+
+
+RUN apt-get --yes install mpich
+RUN apt-get --yes install libmpich-dev
+RUN apt-get --yes install libhdf5-serial-dev
+RUN apt-get --yes install libhdf5-mpich-dev
+RUN apt-get --yes install libblas-dev
+RUN apt-get --yes install liblapack-dev
+RUN apt-get --yes install bzip2
+RUN apt-get --yes install wget bzip2
+RUN apt-get -y install sudo #  needed as the install NJOY script has a sudo make install command
+RUN apt-get -y install git
+
+
+
+# dependancies for the occ_faceter
+RUN apt-get --yes update && apt-get --yes upgrade
+RUN apt-get --yes install libcgal-dev
+RUN apt-get --yes install software-properties-common
+RUN add-apt-repository ppa:freecad-maintainers/freecad-stable
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt-get --yes install libocc*dev
+RUN apt-get --yes install occ*
+RUN apt-get --yes install libtbb-dev
+
+# needed for cadquery
+RUN apt-get install -y libgl1-mesa-dev 
+RUN apt-get install -y libglu1-mesa-dev
+RUN apt-get install -y freeglut3-dev
+
+# Anaconda installing
+RUN wget https://repo.continuum.io/archive/Anaconda3-2020.02-Linux-x86_64.sh
+
+RUN bash Anaconda3-2020.02-Linux-x86_64.sh -b
+RUN rm Anaconda3-2020.02-Linux-x86_64.sh
+
+# Set path to conda
+ENV PATH /root/anaconda3/bin:$PATH
+
+# Configuring access to Jupyter
+RUN mkdir /opt/notebooks
+RUN jupyter notebook --generate-config --allow-root
+RUN echo "c.NotebookApp.password = u'sha1:6a3f528eec40:6e896b6e4828f525a6e20e5411cd1c8075d68619'" >> /root/.jupyter/jupyter_notebook_config.py
+
+# # Jupyter listens port: 8888
+EXPOSE 8888
+
+RUN conda install -c conda-forge -c cadquery cadquery=2
+
+# newer CMake version allows us to set libraries, includes of the
+# imported DAGMC target in CMake
+RUN pip install cmake==3.12.0
+
+# pyrender install version 2.0-dev which breaks in docker
+RUN pip uninstall pyglet 
+# this installs version 1.48 which works in docker
+RUN pip install pyglet
+
+
+
+
+#ENV DAGMC_DIR=$HOME/DAGMC/
+# MOAB Variables
+ENV MOAB_BRANCH='Version5.1.0'
+ENV MOAB_REPO='https://bitbucket.org/fathomteam/moab/'
+ENV MOAB_INSTALL_DIR=$HOME/MOAB/
+
+# DAGMC Variables
+ENV DAGMC_BRANCH='develop'
+ENV DAGMC_REPO='https://github.com/svalinn/dagmc'
+ENV DAGMC_INSTALL_DIR=$HOME/DAGMC/
+
+
+# MOAB Install
+RUN cd $HOME && \
+    mkdir MOAB && \
+    cd MOAB && \
+    git clone -b $MOAB_BRANCH $MOAB_REPO  && \
+    mkdir build && cd build && \
+    cmake ../moab -DENABLE_HDF5=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$MOAB_INSTALL_DIR && \
+    make -j8 && make -j8 install  && \
+    cmake ../moab -DBUILD_SHARED_LIBS=OFF && \
+    make -j8 install && \
+    rm -rf $HOME/MOAB/moab $HOME/MOAB/build
+
+# DAGMC Install
+RUN cd $HOME && \
+    mkdir DAGMC && cd DAGMC && \
+    git clone -b $DAGMC_BRANCH $DAGMC_REPO && \
+    mkdir build && \
+    cd build && \
+    cmake ../dagmc -DBUILD_TALLY=ON -DCMAKE_INSTALL_PREFIX=$DAGMC_INSTALL_DIR -DMOAB_DIR=$MOAB_INSTALL_DIR && \
+    make -j8 install && \
+    rm -rf $HOME/DAGMC/dagmc $HOME/DAGMC/build
+
+RUN pip install --upgrade numpy
+
+# installs OpenMc from source
+RUN cd /opt && \
+    git clone https://github.com/openmc-dev/openmc.git && \
+    cd openmc && \
+    git checkout develop && \
+   mkdir build && cd build && \
+   cmake -Ddagmc=ON -DDAGMC_ROOT=$DAGMC_INSTALL_DIR -DHDF5_PREFER_PARALLEL=OFF .. && \
+   make -j8  && \
+   make install  && \
+   cd /opt/openmc/  && \
+   pip install .
+
+
+# install endf nuclear data
+
+# clone data repository
+RUN git clone https://github.com/openmc-dev/data.git
+
+# run script that converts ACE data to hdf5 data
+RUN python3 data/convert_nndc71.py --cleanup
+
+ENV OPENMC_CROSS_SECTIONS=/nndc-b7.1-hdf5/cross_sections.xml
+
+
+RUN git clone https://github.com/shimwell/paramak
+
