@@ -1,5 +1,5 @@
 # paramak_dependencies
-This repo contains a dockerfile for use with continuous integration testing for the Paramak code.
+This repository contains a dockerfile for use with continuous integration testing for the Paramak code.
 
 The dockerfile is automatically rebuilt on dockerhub when changes are pushed to this repository (master branch)
 

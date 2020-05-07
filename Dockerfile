@@ -1,7 +1,6 @@
 # build with the following command
-# sudo docker build -f Dockerfile_openmc_dagmc -t openmcworkshop/openmc_dagmc .
+# sudo docker build -f Dockerfile_openmc_dagmc -t openmcworkshop/paramak .
 
-# We will use Ubuntu for our image
 FROM ubuntu:18.04
 
 # Updating Ubuntu packages
