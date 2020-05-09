@@ -82,7 +82,6 @@ RUN pip install pyglet
 
 
 
-
 #ENV DAGMC_DIR=$HOME/DAGMC/
 # MOAB Variables
 ENV MOAB_BRANCH='Version5.1.0'
@@ -146,11 +145,9 @@ ENV OPENMC_CROSS_SECTIONS=/nndc-b7.1-hdf5/cross_sections.xml
 
 RUN echo 'using updated parametric_plasma_source'
 RUN pip install parametric_plasma_source
+RUN pip install pyvtk
 
-ENV PATH=$PATH:/DAGMC/bin/
-ENV LD_LIBRARY_PATH=/MOAB/lib:$LD_LIBRARY_PATH
-ENV LD_LIBRARY_PATH=$MOAB_INSTALL_DIR/lib:$LD_LIBRARY_PATH
-ENV LD_LIBRARY_PATH=$DAGMC_INSTALL_DIR/lib:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH /MOAB/lib:$LD_LIBRARY_PATH
 
 # install the occ_faceter, this currently uses a branch that could be merged
 RUN git clone https://github.com/makeclean/occ_faceter.git && \
@@ -160,4 +157,23 @@ RUN git clone https://github.com/makeclean/occ_faceter.git && \
     make -j8 && \
     make install
 
+#ENV PATH /occ_faceter/bin/:$PATH
+#ENV PATH /DAGMC/bin/:$PATH
+#ENV LD_LIBRARY_PATH /DAGMC/lib:$LD_LIBRARY_PATH
+
+RUN echo 'export PATH=$PATH:/MOAB/bin' >> ~/.bashrc
+# RUN echo 'export PATH=$PATH:/plotter/' >> ~/.bashrc
+RUN echo 'export PATH=$PATH:/DAGMC/bin' >> ~/.bashrc
+RUN echo 'export PATH=$PATH:/occ_faceter/bin/' >> ~/.bashrc
+
+
+RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/root/anaconda3/lib/' >> ~/.bashrc
+
+RUN apt-get --yes install paraview
+
 # this is also needed RUN git clone https://github.com/shimwell/paramak
+
+#these commands should all be found but won't work as they need input files
+RUN occ_faceter
+RUN mbconvert
+RUN make_watertight
