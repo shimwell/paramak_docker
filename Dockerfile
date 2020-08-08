@@ -28,6 +28,7 @@ RUN echo "c.NotebookApp.password = u'sha1:6a3f528eec40:6e896b6e4828f525a6e20e541
 EXPOSE 8888
 
 RUN conda install -c conda-forge -c cadquery cadquery=2
+RUN conda install -c conda-forge moab
 
 RUN apt-get update
 RUN apt-get install -y libgl1-mesa-dev 
