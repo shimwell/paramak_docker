@@ -82,5 +82,6 @@ RUN cd $HOME && \
 # ENV PATH /root/anaconda3/bin:$PATH
 
 # RUN conda install -c conda-forge -c cadquery cadquery=2
-
+RUN conda create --name cq python=3.7
+RUN conda install -c conda-forge -c cadquery cadquery=master
 USER root
