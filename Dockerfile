@@ -1,7 +1,7 @@
 # build with the following command
 # sudo docker build -f Dockerfile_openmc_dagmc -t openmcworkshop/paramak .
 
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 # Updating Ubuntu packages
 RUN apt-get update && yes|apt-get upgrade
@@ -17,6 +17,7 @@ RUN apt-get install -y freeglut3-dev
 # compiler needed for MOAB
 RUN apt-get --yes install g++ 
 RUN apt-get --yes install gfortran 
+RUN apt-get --yes install cmake 
 
 RUN apt-get install -y git
 
@@ -36,10 +37,6 @@ RUN conda install -c conda-forge -c cadquery cadquery=2
 ENV MOAB_BRANCH='Version5.1.0'
 ENV MOAB_REPO='https://bitbucket.org/fathomteam/moab/'
 ENV MOAB_INSTALL_DIR=$HOME/MOAB/
-
-# needed for newest version of openmc with dagmc
-RUN apt remove -y cmake
-RUN pip install cmake
 
 # MOAB Install
 RUN cd $HOME && \
