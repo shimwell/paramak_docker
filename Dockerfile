@@ -34,7 +34,7 @@ ENV MOAB_REPO='https://bitbucket.org/fathomteam/moab/'
 ENV MOAB_INSTALL_DIR=$HOME/MOAB/
 
 # needed for newest version of openmc with dagmc
-RUN sudo apt remove -y cmake
+RUN apt remove -y cmake
 RUN pip install cmake
 
 # MOAB Install
