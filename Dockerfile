@@ -19,6 +19,9 @@ RUN apt-get --yes install g++
 RUN apt-get --yes install gfortran 
 RUN apt-get --yes install cmake 
 
+RUN apt-get --yes install libblas-dev 
+RUN apt-get --yes install liblapack-dev
+
 RUN apt-get install -y git
 
 # Anaconda installing
