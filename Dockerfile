@@ -16,6 +16,7 @@ RUN apt-get install -y freeglut3-dev
 
 # compiler needed for MOAB
 RUN apt-get --yes install g++ 
+RUN apt-get --yes install gfortran 
 
 RUN apt-get install -y git
 
