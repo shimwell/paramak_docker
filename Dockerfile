@@ -14,6 +14,8 @@ RUN apt-get install -y libgl1-mesa-dev
 RUN apt-get install -y libglu1-mesa-dev
 RUN apt-get install -y freeglut3-dev
 
+RUN apt-get install -y git
+
 # Anaconda installing
 RUN wget https://repo.continuum.io/archive/Anaconda3-2020.02-Linux-x86_64.sh
 
