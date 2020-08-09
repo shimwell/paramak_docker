@@ -14,6 +14,9 @@ RUN apt-get install -y libgl1-mesa-dev
 RUN apt-get install -y libglu1-mesa-dev
 RUN apt-get install -y freeglut3-dev
 
+# compiler needed for MOAB
+RUN apt-get --yes install g++ 
+
 RUN apt-get install -y git
 
 # Anaconda installing
