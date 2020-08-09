@@ -22,6 +22,7 @@ RUN apt-get --yes install cmake
 RUN apt-get --yes install libblas-dev 
 RUN apt-get --yes install liblapack-dev
 RUN apt-get --yes install libeigen3-dev
+RUN apt-get --yes install libcurl4-openssl-dev
 
 RUN apt-get install -y git
 
