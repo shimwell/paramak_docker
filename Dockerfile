@@ -83,5 +83,6 @@ RUN cd $HOME && \
 
 # RUN conda install -c conda-forge -c cadquery cadquery=2
 RUN conda create --name cq python=3.7
+RUN conda activate cq
 RUN conda install -c conda-forge -c cadquery cadquery=master
 USER root
