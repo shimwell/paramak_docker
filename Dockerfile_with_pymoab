@@ -1,8 +1,7 @@
 # build with the following command
-# sudo docker build -t openmcworkshop/paramak_dependencies .
-# build with the following command
-# sudo docker build -t openmcworkshop/paramak_dependencies . --no-cache
-# docker run -p 8888:8888 openmcworkshop/paramak_dependencies
+# sudo docker build -f Dockerfile_with_pymoab -t openmcworkshop/paramak_dependencies_with_pymoab . --no-cache
+# run with the following command
+# docker run -p 8888:8888 openmcworkshop/paramak_dependencies_with_pymoab
 
 
 # FROM jupyter/minimal-notebook:10c9768598ab
@@ -49,6 +48,8 @@ RUN rm Anaconda3-2020.02-Linux-x86_64.sh
 # # Set path to conda
 ENV PATH /root/anaconda3/bin:$PATH
 
+RUN conda install -c conda-forge -c cadquery cadquery=master
+
 RUN pip install h5py
 RUN pip install cython
 
@@ -67,7 +68,6 @@ RUN cd $HOME && \
 
 
 
-RUN conda install -c conda-forge -c cadquery cadquery=master
 
 # # pyrender install version 2.0-dev which breaks in docker
 RUN pip uninstall pyglet 
