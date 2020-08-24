@@ -20,17 +20,3 @@ RUN rm Anaconda3-2020.02-Linux-x86_64.sh
 ENV PATH /root/anaconda3/bin:$PATH
 
 RUN conda install -c conda-forge -c cadquery cadquery=2
-
-RUN apt-get update
-RUN apt-get install -y libgl1-mesa-dev 
-RUN apt-get install -y libglu1-mesa-dev
-RUN apt-get install -y freeglut3-dev
-RUN apt-get install -y libosmesa6-dev
-
-# ENV PYOPENGL_PLATFORM egl
-ENV PYOPENGL_PLATFORM=osmesa
-
-# # # pyrender install version 2.0-dev which breaks in docker
-RUN pip uninstall pyglet 
-# # # this installs a version which works in docker
-RUN pip install pyglet
