@@ -1,5 +1,5 @@
 # build with the following command
-# sudo docker build -f Dockerfile_openmc_dagmc -t openmcworkshop/paramak .
+# sudo docker build -t openmcworkshop/paramak_dependencies .
 
 FROM ubuntu:18.04
 
@@ -25,8 +25,12 @@ RUN apt-get update
 RUN apt-get install -y libgl1-mesa-dev 
 RUN apt-get install -y libglu1-mesa-dev
 RUN apt-get install -y freeglut3-dev
+RUN apt-get install -y libosmesa6-dev
 
-# pyrender install version 2.0-dev which breaks in docker
+# ENV PYOPENGL_PLATFORM egl
+ENV PYOPENGL_PLATFORM=osmesa
+
+# # # pyrender install version 2.0-dev which breaks in docker
 RUN pip uninstall pyglet 
-# this installs version 1.48 which works in docker
+# # # this installs a version which works in docker
 RUN pip install pyglet
