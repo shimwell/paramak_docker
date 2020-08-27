@@ -19,7 +19,7 @@ RUN rm Anaconda3-2020.02-Linux-x86_64.sh
 # Set path to conda
 ENV PATH /root/anaconda3/bin:$PATH
 
-RUN conda install -c conda-forge -c cadquery cadquery=master
+RUN conda install -c cadquery -c conda-forge cadquery=master
 
 RUN apt-get update
 RUN apt-get install -y libgl1-mesa-dev 
