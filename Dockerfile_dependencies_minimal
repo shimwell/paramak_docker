@@ -1,7 +1,5 @@
 # build with the following command
-# sudo docker build -f Dockerfile_with_pymoab -t openmcworkshop/paramak_dependencies_with_pymoab . --no-cache
-# run with the following command
-# docker run -it openmcworkshop/paramak_dependencies_with_pymoab
+# sudo docker build -t openmcworkshop/paramak_dependencies .
 
 FROM ubuntu:18.04
 
@@ -74,6 +72,3 @@ RUN cd $HOME && \
     cd pymoab && \
     bash install.sh && \
     python setup.py install
-
-RUN git clone --single-branch --branch main git@github.com:ukaea/paramak.git
-RUN cd paramak && python setup.py develop

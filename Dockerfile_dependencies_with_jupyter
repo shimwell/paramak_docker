@@ -1,38 +1,16 @@
 # build with the following command
-# sudo docker build -f Dockerfile_with_pymoab -t openmcworkshop/paramak_dependencies_with_pymoab . --no-cache
+# sudo docker build -f Dockerfile_with_jupyter_pymoab -t openmcworkshop/paramak_dependencies_with_jupyter_pymoab . --no-cache
 # run with the following command
-# docker run -it openmcworkshop/paramak_dependencies_with_pymoab
-
-FROM ubuntu:18.04
-
-# Updating Ubuntu packages
-RUN apt-get update && yes|apt-get upgrade
-
-# Adding wget and bzip2
-RUN apt-get install -y wget bzip2
-
-# Anaconda installing
-RUN wget https://repo.continuum.io/archive/Anaconda3-2020.02-Linux-x86_64.sh
-
-RUN bash Anaconda3-2020.02-Linux-x86_64.sh -b
-
-RUN rm Anaconda3-2020.02-Linux-x86_64.sh
-
-# Set path to conda
-ENV PATH /root/anaconda3/bin:$PATH
-
-RUN conda install -c conda-forge -c cadquery cadquery=2
-
-RUN apt-get update
-RUN apt-get install -y libgl1-mesa-dev 
-RUN apt-get install -y libglu1-mesa-dev
-RUN apt-get install -y freeglut3-dev
-RUN apt-get install -y libosmesa6
-RUN apt-get install -y libosmesa6-dev
-RUN apt-get install -y libgles2-mesa-dev
+# docker run -p 8888:8888 openmcworkshop/paramak_dependencies_with_jupyter_pymoab
 
 
-# the following commands are needed for pymoab installation
+FROM jupyter/minimal-notebook:10c9768598ab
+
+
+# this is required to install programs on the base image
+USER root
+
+RUN apt-get --yes update && apt-get --yes upgrade
 
 RUN apt-get --yes install mpich
 RUN apt-get --yes install libmpich-dev
@@ -41,8 +19,11 @@ RUN apt-get --yes install libhdf5-mpich-dev
 RUN apt-get --yes install libblas-dev
 RUN apt-get --yes install liblapack-dev
 
+RUN apt-get --yes install cmake
 RUN apt-get -y install git
 RUN apt-get --yes install hdf5-tools
+
+USER $NB_USER
 
 # MOAB Variables
 ENV MOAB_BRANCH='Version5.1.0'
@@ -50,16 +31,19 @@ ENV MOAB_REPO='https://bitbucket.org/fathomteam/moab/'
 ENV MOAB_INSTALL_DIR=$HOME/MOAB/
 
 
-# MOAB download
+# MOAB Install
 RUN cd $HOME && \
     mkdir MOAB && \
     cd MOAB && \
     git clone -b $MOAB_BRANCH $MOAB_REPO
 
+
+RUN conda create cq
+ENV CONDA_DEFAULT_ENV cq
+RUN conda install -c conda-forge -c cadquery cadquery=master
+
 RUN pip install h5py
 RUN pip install cython
-RUN pip install cmake
-RUN apt-get --yes install cmake
 
 RUN cd $HOME && \
     cd MOAB && \
@@ -72,8 +56,14 @@ RUN cd $HOME && \
     make -j8 install && \
     # rm -rf $HOME/MOAB/moab $HOME/MOAB/build && \
     cd pymoab && \
-    bash install.sh && \
-    python setup.py install
+    bash install.sh
 
-RUN git clone --single-branch --branch main git@github.com:ukaea/paramak.git
-RUN cd paramak && python setup.py develop
+
+
+
+# # pyrender install version 2.0-dev which breaks in docker
+RUN pip uninstall pyglet 
+# # this installs version 1.48 which works in docker
+RUN pip install pyglet
+
+USER root
