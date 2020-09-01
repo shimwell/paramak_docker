@@ -14,9 +14,6 @@ There are several Dockerfile avaialbe, these include:
 
 - Dockerfile_dependencies includes all optional dependancies for the paramak but not the paramak package itself, this is used for CI testing of the install procedure
 
-- Dockerfile_dependencies_minimal includes main dependancies (not pymoab) but not the paramak package itself
-
-
 
 
 To build dockerfile locally
