@@ -75,5 +75,5 @@ RUN cd $HOME && \
     bash install.sh && \
     python setup.py install
 
-RUN git clone --single-branch --branch main git@github.com:ukaea/paramak.git
+RUN git clone --single-branch --branch main https://github.com/ukaea/paramak.git
 RUN cd paramak && python setup.py develop
