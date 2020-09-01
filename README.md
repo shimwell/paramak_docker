@@ -8,7 +8,7 @@ There are several Dockerfile avaialbe, these include:
 
 - Dockerfile includes all optional dependancies and the paramak package
 
-- Dockerfile includes all optional dependancies and the development branch of the paramak package
+- Dockerfile_dev includes all optional dependancies and the development branch of the paramak package
 
 - Dockerfile_paramak_with_neutronics all optional dependancies, the paramak package and software needed for neutronics simulations
 
