@@ -10,11 +10,11 @@ There are several Dockerfile avaialbe, these include:
 
 - Dockerfile_dev includes all optional dependancies and the development branch of the paramak package
 
-- Dockerfile_paramak_with_neutronics all optional dependancies, the paramak package and software needed for neutronics simulations
-
 - Dockerfile_dependencies includes all optional dependancies for the paramak but not the paramak package itself, this is used for CI testing of the install procedure
 
-
+# ToDo
+- Dockerfile_paramak_with_neutronics all optional dependancies, the paramak package and software needed for neutronics simulations
+- Dockerfile_paramak_with_jupyter
 
 To build dockerfile locally
 
