@@ -93,6 +93,17 @@ ENV DAGMC_BRANCH='develop'
 ENV DAGMC_REPO='https://github.com/svalinn/dagmc'
 ENV DAGMC_INSTALL_DIR=$HOME/DAGMC/
 
+# MOAB download
+RUN cd $HOME && \
+    mkdir MOAB && \
+    cd MOAB && \
+    git clone -b $MOAB_BRANCH $MOAB_REPO
+
+RUN pip install h5py
+RUN pip install cython
+RUN pip install cmake
+RUN apt-get --yes install cmake
+
 # MOAB Install
 RUN cd $HOME && \
     cd MOAB && \
