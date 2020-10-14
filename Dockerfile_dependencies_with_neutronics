@@ -1,9 +1,8 @@
 # build with the following command
-# sudo docker build -f Dockerfile_paramak_with_neutronics -t paramak_with_neutronics .
+# sudo docker build -f Dockerfile_paramak_dependencies_with_neutronics -t paramak_dependencies_with_neutronics .
 
 # Run with the following command
-# sudo docker run -it paramak_with_neutronics
-
+# sudo docker run -it paramak_dependencies_with_neutronics
 
 FROM ubuntu:18.04
 
@@ -74,36 +73,40 @@ RUN pip install cython
 RUN pip install cmake
 RUN apt-get --yes install cmake
 
+# DAGMC download
+RUN cd $HOME && \
+    mkdir DAGMC && \
+    cd DAGMC && \
+    git clone -b develop https://github.com/svalinn/dagmc
+
+RUN conda install gxx_linux-64
+ENV MOAB_INSTALL_DIR=$HOME/MOAB
+
+# DAGMC Variables
+ENV DAGMC_INSTALL_DIR=$HOME/DAGMC/
+ENV LD_LIBRARY_PATH=$MOAB_INSTALL_DIR/lib:$LD_LIBRARY_PATH
+RUN echo $LD_LIBRARY_PATH
+
+# MOAB Install
 RUN cd $HOME && \
     cd MOAB && \
     mkdir build && cd build && \
-    cmake ../moab -DENABLE_HDF5=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$MOAB_INSTALL_DIR -DENABLE_PYMOAB=ON && \
-    # cmake ../moab -DENABLE_HDF5=ON -DENABLE_MPI=off -DENABLE_NETCDF=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$MOAB_INSTALL_DIR && \
-    make -j8 &&  \
-    make -j8 install  && \
-    cmake ../moab -DBUILD_SHARED_LIBS=ON && \
-    make -j8 install && \
-    # rm -rf $HOME/MOAB/moab $HOME/MOAB/build && \
-    cd pymoab && \
-    bash install.sh && \
-    python setup.py install
-
-
-# DAGMC Variables
-ENV DAGMC_BRANCH='develop'
-ENV DAGMC_REPO='https://github.com/svalinn/dagmc'
-ENV DAGMC_INSTALL_DIR=$HOME/DAGMC/
-
+    cmake ../moab -DENABLE_HDF5=ON -DENABLE_MPI=off -DENABLE_NETCDF=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$MOAB_INSTALL_DIR && \
+    make -j &&  \
+    make -j install  && \
+    cmake ../moab -DBUILD_SHARED_LIBS=OFF && \
+    make -j install && \
+    rm -rf $HOME/MOAB/moab $HOME/MOAB/build
 
 # DAGMC Install
 RUN cd $HOME && \
-    mkdir DAGMC && cd DAGMC && \
-    git clone -b $DAGMC_BRANCH $DAGMC_REPO && \
+    cd DAGMC && \
     mkdir build && \
     cd build && \
     cmake ../dagmc -DBUILD_TALLY=ON -DCMAKE_INSTALL_PREFIX=$DAGMC_INSTALL_DIR -DMOAB_DIR=$MOAB_INSTALL_DIR && \
-    make -j8 install && \
+    make -j install && \
     rm -rf $HOME/DAGMC/dagmc $HOME/DAGMC/build
+
 
 
 # check if this is still neeeded
