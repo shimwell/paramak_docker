@@ -143,6 +143,14 @@ ENV OPENMC_CROSS_SECTIONS=/nndc-b7.1-hdf5/cross_sections.xml
 
 
 
+RUN add-apt-repository -y ppa:freecad-maintainers/freecad-stable
+RUN apt update
+RUN install -y freecad
+RUN apt-get install -y libtbb2 libocct-foundation-7.3  libocct-data-exchange-7.3  libocct-modeling-data-7.3 libocct-modeling-algorithms-7.3  libocct-ocaf-7.3
+RUN wget https://github.com/ukaea/parallel-preprocessor/releases/download/dev/parallel-preprocessor-0.3-dev_ubuntu-18.04.deb
+RUN dpkg -i parallel-preprocessor-0.3-dev_ubuntu-18.04.deb
+
+
 RUN echo 'using updated parametric_plasma_source'
 RUN pip install parametric_plasma_source
 RUN pip install pyvtk
@@ -161,15 +169,14 @@ RUN git clone https://github.com/makeclean/occ_faceter.git && \
 #ENV PATH /DAGMC/bin/:$PATH
 #ENV LD_LIBRARY_PATH /DAGMC/lib:$LD_LIBRARY_PATH
 
-RUN echo 'export PATH=$PATH:/MOAB/bin' >> ~/.bashrc
+#RUN echo 'export PATH=$PATH:/MOAB/bin' >> ~/.bashrc
 # RUN echo 'export PATH=$PATH:/plotter/' >> ~/.bashrc
-RUN echo 'export PATH=$PATH:/DAGMC/bin' >> ~/.bashrc
-RUN echo 'export PATH=$PATH:/occ_faceter/bin/' >> ~/.bashrc
+#RUN echo 'export PATH=$PATH:/DAGMC/bin' >> ~/.bashrc
+#RUN echo 'export PATH=$PATH:/occ_faceter/bin/' >> ~/.bashrc
 
 
-RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/root/anaconda3/lib/' >> ~/.bashrc
+#RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/root/anaconda3/lib/' >> ~/.bashrc
 
-RUN apt-get --yes install paraview
 
 # this is also needed RUN git clone https://github.com/shimwell/paramak
 
