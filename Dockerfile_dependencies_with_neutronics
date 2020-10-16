@@ -1,5 +1,5 @@
 # build with the following command
-# sudo docker build -f Dockerfile_paramak_dependencies_with_neutronics -t paramak_dependencies_with_neutronics .
+# sudo docker build -f Dockerfile_dependencies_with_neutronics -t paramak_dependencies_with_neutronics .
 
 # Run with the following command
 # sudo docker run -it paramak_dependencies_with_neutronics
@@ -150,3 +150,26 @@ RUN git clone https://github.com/open-radiation-sources/parametric-plasma-source
 RUN cd parametric-plasma-source && pip install .
 
 ENV OPENMC_CROSS_SECTIONS=/nndc-b7.1-hdf5/cross_sections.xml
+
+
+RUN apt --yes install libhdf5-dev build-essential gfortran autoconf libtool liblapack-dev
+RUN apt --yes install libcgal-dev libtbb-dev
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update
+# for add-apt-repository
+RUN apt-get --yes install software-properties-common
+# for occ
+RUN add-apt-repository ppa:freecad-maintainers/freecad-stable
+RUN apt --yes  install libocct*-dev occt*
+RUN apt --yes  install cmake libcgal-dev libtbb-dev
+
+RUN git clone https://github.com/makeclean/occ_faceter.git
+RUN cd occ_faceter && \
+    mkdir build && \
+    cd build && \
+    cmake .. -DCMAKE_INSTALL_PREFIX=..  && \
+    make -j  && \
+# make test  && \
+    make install
+ENV PATH=$PATH:$HOME/occ_faceter/bin
