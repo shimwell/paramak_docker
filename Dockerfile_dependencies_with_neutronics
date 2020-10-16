@@ -173,3 +173,10 @@ RUN cd occ_faceter && \
 # make test  && \
     make install
 ENV PATH=$PATH:$HOME/occ_faceter/bin
+
+RUN add-apt-repository --yes ppa:freecad-maintainers/freecad-stable
+RUN apt update
+RUN apt-get install --yes freecad
+RUN apt-get install --yes libtbb2 libocct-foundation-7.3  libocct-data-exchange-7.3  libocct-modeling-data-7.3 libocct-modeling-algorithms-7.3  libocct-ocaf-7.3
+RUN wget https://github.com/ukaea/parallel-preprocessor/releases/download/dev/parallel-preprocessor-0.3-dev_ubuntu-18.04.deb
+RUN dpkg -i parallel-preprocessor-0.3-dev_ubuntu-18.04.deb
