@@ -1,28 +1,19 @@
 # build with the following command
-# sudo docker build -f Dockerfile_dependencies_with_neutronics -t paramak_dependencies_with_neutronics .
+# sudo docker build -f Dockerfile_dependencies_with_neutronics_and_jupyter -t paramak_dependencies_with_neutronics_and_jupyter .
 
 # Run with the following command
-# sudo docker run -it paramak_dependencies_with_neutronics
+# sudo docker run -it paramak_dependencies_with_neutronics_and_jupyter
 
 
-FROM ubuntu:18.04
 
-# Updating Ubuntu packages
-RUN apt-get update && yes|apt-get upgrade
+FROM jupyter/minimal-notebook
 
-# Adding wget and bzip2
-RUN apt-get install -y wget bzip2
+# this is required to install programs on the base image
+USER root
 
-# Anaconda installing
-#RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.3-Linux-x86_64.sh
-RUN bash Miniconda3-py37_4.8.3-Linux-x86_64.sh -b
-# RUN bash Miniconda3-latest-Linux-x86_64.sh -b
-# ENV PATH /root/anaconda3/bin:$PATH
-ENV PATH /root/miniconda3/bin:$PATH
-
-RUN conda install -c conda-forge -c cadquery cadquery=2
-RUN conda install gxx_linux-64
+RUN conda create --no-default-packages -n cq
+RUN conda install --name cq -c conda-forge -c cadquery cadquery=2
+RUN conda install --name cq gxx_linux-64
 
 
 RUN apt-get update
@@ -64,11 +55,9 @@ RUN apt-get update
 # for add-apt-repository
 RUN apt-get --yes install software-properties-common
 # for occ
-RUN add-apt-repository --yes ppa:freecad-maintainers/freecad-stable
-RUN apt update
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get install --yes libocct*-dev occt*
-RUN apt-get install --yes cmake libcgal-dev libtbb-dev
+RUN add-apt-repository ppa:freecad-maintainers/freecad-stable
+RUN apt --yes  install libocct*-dev occt*
+RUN apt --yes  install cmake libcgal-dev libtbb-dev
 
 # needed for ppp
 RUN add-apt-repository --yes ppa:freecad-maintainers/freecad-stable
@@ -176,20 +165,21 @@ ENV OPENMC_CROSS_SECTIONS=/nndc-b7.1-hdf5/cross_sections.xml
 RUN git clone https://github.com/openmc-dev/data.git
 
 # run script that converts ACE data to hdf5 data
-RUN python3 data/convert_tendl.py --cleanup
 RUN python3 data/convert_nndc71.py --cleanup
-RUN data/combine_libraries.py -l nndc-b7.1-hdf5/cross_sections.xml tendl-2019-hdf5/cross_sections.xml
-ENV OPENMC_CROSS_SECTIONS=/cross_sections.xml
 
 ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/hdf5/serial:$LD_LIBRARY_PATH
 
 RUN ln /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so.103
 RUN ln /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so.100
 
+Run echo r
 RUN git clone https://github.com/ukaea/paramak.git && \
     cd paramak && \
-    git checkout develop && \
+    git checkout adding_neutronics && \
     pip install -e .
 
 WORKDIR paramak/examples/example_neutronics_simulations
 
+
+
+ENTRYPOINT python ball_reactor.py
