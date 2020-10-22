@@ -1,5 +1,5 @@
 # build with the following command
-# sudo docker build -f Dockerfile_dependencies_with_neutronics -t paramak_dependencies_with_neutronics .
+# sudo docker build -t paramak_dependencies_with_neutronics .
 
 # Run with the following command
 # sudo docker run -it paramak_dependencies_with_neutronics
@@ -14,11 +14,9 @@ RUN apt-get update && yes|apt-get upgrade
 RUN apt-get install -y wget bzip2
 
 # Anaconda installing
-#RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.3-Linux-x86_64.sh
 RUN bash Miniconda3-py37_4.8.3-Linux-x86_64.sh -b
-# RUN bash Miniconda3-latest-Linux-x86_64.sh -b
-# ENV PATH /root/anaconda3/bin:$PATH
+
 ENV PATH /root/miniconda3/bin:$PATH
 
 RUN conda install -c conda-forge -c cadquery cadquery=2
@@ -99,7 +97,6 @@ RUN cd $HOME && \
     git clone -b $MOAB_BRANCH $MOAB_REPO && \
     mkdir build && cd build && \
     cmake ../moab -DENABLE_HDF5=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$MOAB_INSTALL_DIR -DENABLE_PYMOAB=ON && \
-    # cmake ../moab -DENABLE_HDF5=ON -DENABLE_MPI=off -DENABLE_NETCDF=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=$MOAB_INSTALL_DIR && \
     make -j &&  \
     make -j install  && \
     cmake ../moab -DBUILD_SHARED_LIBS=ON && \
@@ -117,7 +114,6 @@ RUN cd occ_faceter && \
     cd build && \
     cmake .. -DCMAKE_INSTALL_PREFIX=..  && \
     make -j  && \
-    # make test  && \
     make install
 ENV PATH=$PATH:$HOME/occ_faceter/bin
 
@@ -170,7 +166,7 @@ RUN cd parametric-plasma-source && pip install .
 
 ENV OPENMC_CROSS_SECTIONS=/nndc-b7.1-hdf5/cross_sections.xml
 
-# install endf nuclear data
+# install nuclear data
 
 # clone data repository
 RUN git clone https://github.com/openmc-dev/data.git
@@ -186,10 +182,10 @@ ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/hdf5/serial:$LD_LIBRARY_PATH
 RUN ln /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so.103
 RUN ln /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so.100
 
-RUN git clone https://github.com/ukaea/paramak.git && \
-    cd paramak && \
-    git checkout develop && \
-    pip install -e .
+# RUN git clone https://github.com/ukaea/paramak.git && \
+#    cd paramak && \
+#    git checkout develop && \
+#    pip install -e .
 
-WORKDIR paramak/examples/example_neutronics_simulations
+# WORKDIR paramak/examples/example_neutronics_simulations
 
