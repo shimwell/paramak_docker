@@ -1,11 +1,12 @@
 # build with the following command
-# sudo docker build -t paramak_dependencies_with_neutronics .
+# sudo docker build -f Dockerfile_dependencies_with_neutronics -t paramak_dependencies_with_neutronics .
 
 # Run with the following command
 # sudo docker run -it paramak_dependencies_with_neutronics
 
 
 FROM ubuntu:18.04
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Updating Ubuntu packages
 RUN apt-get update && yes|apt-get upgrade
@@ -16,6 +17,7 @@ RUN apt-get install -y wget bzip2
 # Anaconda installing
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py37_4.8.3-Linux-x86_64.sh
 RUN bash Miniconda3-py37_4.8.3-Linux-x86_64.sh -b
+RUN rm Miniconda3-py37_4.8.3-Linux-x86_64.sh
 
 ENV PATH /root/miniconda3/bin:$PATH
 
@@ -24,55 +26,64 @@ RUN conda install gxx_linux-64
 
 
 RUN apt-get update
-RUN apt-get install -y libgl1-mesa-dev 
-RUN apt-get install -y libglu1-mesa-dev
-RUN apt-get install -y freeglut3-dev
-RUN apt-get install -y libosmesa6
-RUN apt-get install -y libosmesa6-dev
-RUN apt-get install -y libgles2-mesa-dev
+RUN apt-get install -y libgl1-mesa-dev \
+                       libglu1-mesa-dev \
+                       freeglut3-dev \
+                       libosmesa6 \
+                       libosmesa6-dev \
+                       libgles2-mesa-dev
 
 
 # the following commands are needed for pymoab installation
-RUN apt-get --yes install mpich
-RUN apt-get --yes install libmpich-dev
-RUN apt-get --yes install libhdf5-serial-dev
-RUN apt-get --yes install libhdf5-mpich-dev
-RUN apt-get --yes install libblas-dev
-RUN apt-get --yes install liblapack-dev
+RUN apt-get --yes install mpich \
+                          libmpich-dev \
+                          libhdf5-serial-dev \
+                          libhdf5-mpich-dev \
+                          libblas-dev \
+                          liblapack-dev
 
 # needed to allow NETCDF on MOAB which helps with tet meshes in OpenMC
-RUN apt-get --yes install libnetcdf-dev
+# RUN apt-get --yes install libnetcdf-dev
 # RUN apt-get --yes install libnetcdf13
 # eigen3 needed for DAGMC
 RUN apt-get --yes install libeigen3-dev
 
-RUN apt-get -y install sudo #  needed as the install NJOY script has a sudo make install command
-RUN apt-get -y install git
+# sudo is needed as the install NJOY script has a sudo make install command
+RUN apt-get --yes install sudo \
+                          git \
+                          hdf5-tools
 
-# dependancies used in the workshop
-RUN apt-get --yes install imagemagick
-RUN apt-get --yes install hdf5-tools
-RUN apt-get --yes install wget
+# RUN apt-get --yes install imagemagick
 
 
 # needed for occ faceter
-RUN apt --yes install libhdf5-dev build-essential gfortran autoconf libtool liblapack-dev
-RUN apt --yes install libcgal-dev libtbb-dev
+RUN apt --yes install libhdf5-dev \
+                      build-essential \
+                      gfortran \
+                      autoconf \
+                      libtool \
+                      liblapack-dev \
+                      libcgal-dev \
+                      libtbb-dev
+
 RUN apt-get update
-# for add-apt-repository
 RUN apt-get --yes install software-properties-common
-# for occ
+# needed for occ faceter
 RUN add-apt-repository --yes ppa:freecad-maintainers/freecad-stable
 RUN apt update
-ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get install --yes libocct*-dev occt*
-RUN apt-get install --yes cmake libcgal-dev libtbb-dev
+
 
 # needed for ppp
 RUN add-apt-repository --yes ppa:freecad-maintainers/freecad-stable
 RUN apt update
-RUN apt-get install --yes freecad
-RUN apt-get install --yes libtbb2 libocct-foundation-7.3  libocct-data-exchange-7.3  libocct-modeling-data-7.3 libocct-modeling-algorithms-7.3  libocct-ocaf-7.3
+RUN apt-get install --yes freecad \
+                          libtbb2 \
+                          libocct-foundation-7.3 \
+                          libocct-data-exchange-7.3 \
+                          libocct-modeling-data-7.3 \
+                          libocct-modeling-algorithms-7.3 \
+                          libocct-ocaf-7.3
 
 RUN pip install --upgrade numpy
 RUN pip install h5py
@@ -172,15 +183,23 @@ ENV OPENMC_CROSS_SECTIONS=/nndc-b7.1-hdf5/cross_sections.xml
 RUN git clone https://github.com/openmc-dev/data.git
 
 # run script that converts ACE data to hdf5 data
-RUN python3 data/convert_tendl.py --cleanup
 RUN python3 data/convert_nndc71.py --cleanup
-RUN data/combine_libraries.py -l nndc-b7.1-hdf5/cross_sections.xml tendl-2019-hdf5/cross_sections.xml
-ENV OPENMC_CROSS_SECTIONS=/cross_sections.xml
+# RUN python3 data/convert_tendl.py --cleanup
+# RUN data/combine_libraries.py -l nndc-b7.1-hdf5/cross_sections.xml tendl-2019-hdf5/cross_sections.xml
+# ENV OPENMC_CROSS_SECTIONS=/cross_sections.xml
 
+ENV OPENMC_CROSS_SECTIONS=/nndc-b7.1-hdf5/cross_sections.xml
 ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/hdf5/serial:$LD_LIBRARY_PATH
 
 RUN ln /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so.103
 RUN ln /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so.100
+
+# RUN rm tendl-2019-ace
+# RUN rm tendl-2019-download
+RUN rm -rf nndc-b7.1-ace
+RUN rm -rf nndc-b7.1-download
+RUN rm -rf nndc-b7.1-endf
+
 
 # RUN git clone https://github.com/ukaea/paramak.git && \
 #    cd paramak && \
@@ -188,4 +207,3 @@ RUN ln /usr/lib/x86_64-linux-gnu/hdf5/serial/libhdf5.so /usr/lib/x86_64-linux-gn
 #    pip install -e .
 
 # WORKDIR paramak/examples/example_neutronics_simulations
-
