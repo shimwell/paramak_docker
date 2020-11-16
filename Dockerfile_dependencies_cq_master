@@ -18,7 +18,7 @@ RUN conda install -c cadquery -c conda-forge cadquery=master
 
 # the following commands are needed for pymoab installation
 
-RUN apt-get --yes install mpich libmpich-dev libhdf5-serial-dev
+RUN apt-get --yes install mpich libmpich-dev libhdf5-serial-dev && \
                           libhdf5-mpich-dev libblas-dev liblapack-dev
 
 RUN apt-get -y install git
