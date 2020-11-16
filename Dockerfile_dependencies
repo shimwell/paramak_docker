@@ -20,14 +20,11 @@ RUN conda install -c conda-forge -c cadquery cadquery=2
 
 # the following commands are needed for pymoab installation
 
-RUN apt-get --yes install mpich
-RUN apt-get --yes install libmpich-dev
-RUN apt-get --yes install libhdf5-serial-dev
-RUN apt-get --yes install libhdf5-mpich-dev
-RUN apt-get --yes install libblas-dev
-RUN apt-get --yes install liblapack-dev
+RUN apt-get --yes install mpich libmpich-dev libhdf5-serial-dev
+                          libhdf5-mpich-dev libblas-dev liblapack-dev
 
 RUN apt-get -y install git
+RUN apt-get -y install curl
 RUN apt-get --yes install hdf5-tools
 
 # MOAB Variables
