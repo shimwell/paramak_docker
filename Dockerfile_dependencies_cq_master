@@ -1,7 +1,7 @@
 # build with the following command
-# sudo docker build -f Dockerfile_with_pymoab -t openmcworkshop/paramak_dependencies_with_pymoab . --no-cache
+# sudo docker build -f Dockerfile_dependencies_cq_master -t openmcworkshop/paramak_dependencies_with_cq_master .
 # run with the following command
-# docker run -it openmcworkshop/paramak_dependencies_with_pymoab
+# docker run -it openmcworkshop/paramak_dependencies_with_cq_master
 
 FROM continuumio/miniconda3
 
@@ -14,9 +14,7 @@ RUN apt-get install -y libgl1-mesa-glx libgl1-mesa-dev libglu1-mesa-dev \
                        libgles2-mesa-dev && \
                        apt-get clean
 
-RUN conda install -c conda-forge -c cadquery cadquery=2
-
-# RUN conda install -c cadquery -c conda-forge cadquery=master
+RUN conda install -c cadquery -c conda-forge cadquery=master
 
 # the following commands are needed for pymoab installation
 
