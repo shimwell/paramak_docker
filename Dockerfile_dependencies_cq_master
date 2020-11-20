@@ -35,7 +35,7 @@ ENV MOAB_INSTALL_DIR=$HOME/MOAB/
 RUN cd $HOME && \
     mkdir MOAB && \
     cd MOAB && \
-    git clone -b $MOAB_BRANCH $MOAB_REPO
+    git clone --single-branch -b $MOAB_BRANCH $MOAB_REPO
 
 RUN pip install h5py
 RUN pip install cython
