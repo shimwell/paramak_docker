@@ -77,7 +77,7 @@ RUN git clone https://github.com/embree/embree && \
     cmake .. -DCMAKE_INSTALL_PREFIX=.. \
         -DEMBREE_ISPC_SUPPORT=OFF && \
     make -j"$compile_cores" && \
-    make -j"$compile_cores" install && \
+    make -j"$compile_cores" install
 
 # Clone and install MOAB
 RUN pip install --upgrade numpy cython && \
@@ -148,27 +148,4 @@ RUN git clone --recurse-submodules https://github.com/openmc-dev/openmc.git /opt
 
 RUN /opt/openmc/tools/ci/download-xs.sh
 
-ENV OPENMC_CROSS_SECTIONS=nndc_hdf5/cross_sections.xml
-
-# Copies over the Paramak code from the local repository
-
-RUN pip install neutronics_material_maker && \
-RUN pip install parametric_plasma_source && \
-
-
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
-
-
-# Copy over the source code, examples and tests
-COPY run_tests.sh run_tests.sh
-COPY paramak paramak/
-COPY examples examples/
-COPY setup.py setup.py
-COPY tests tests/
-COPY README.md README.md
-
-# using setup.py instead of pip due to https://github.com/pypa/pip/issues/5816
-RUN python setup.py install
-
-WORKDIR examples
+ENV OPENMC_CROSS_SECTIONS=/root/nndc_hdf5/cross_sections.xml
