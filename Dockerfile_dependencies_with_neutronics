@@ -148,4 +148,6 @@ RUN git clone --recurse-submodules https://github.com/openmc-dev/openmc.git /opt
 
 RUN /opt/openmc/tools/ci/download-xs.sh
 
+RUN apt-get -y install curl
+
 ENV OPENMC_CROSS_SECTIONS=/root/nndc_hdf5/cross_sections.xml
