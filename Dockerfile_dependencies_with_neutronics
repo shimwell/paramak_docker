@@ -148,6 +148,13 @@ RUN git clone --recurse-submodules https://github.com/openmc-dev/openmc.git /opt
 
 RUN /opt/openmc/tools/ci/download-xs.sh
 
+# the parametric-plasma-source pip install is not fully working
+RUN pip install neutronics_material_maker && \
+    git clone https://github.com/DanShort12/parametric-plasma-source.git && \
+    cd parametric-plasma-source/ && \
+    git checkout cmake-build-from-pip && \
+    pip install .
+
 RUN apt-get -y install curl
 
 ENV OPENMC_CROSS_SECTIONS=/root/nndc_hdf5/cross_sections.xml
