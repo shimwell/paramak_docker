@@ -14,7 +14,7 @@
 #
 # Example builds:
 # Building using the defaults (cq_version 2, no neutronics and 1 core compile)
-# docker build-f Dockerfile_dependencies_with_neutronics -t openmcworkshop/paramak_dependencies_with_cqm_neutronics .
+# docker build -f Dockerfile_dependencies_with_neutronics -t openmcworkshop/paramak_dependencies_with_cqm_neutronics .
 #
 # run with the following command
 # docker run -it openmcworkshop/paramak_dependencies_with_cqm_neutronics
@@ -146,7 +146,7 @@ RUN git clone --recurse-submodules https://github.com/openmc-dev/openmc.git /opt
     cd ..  && \
     pip install -e .[test]
 
-RUN /opt/openmc/tools/ci/download-xs.sh
+RUN apt-get -y install curl
 
 # the parametric-plasma-source pip install is not fully working
 RUN pip install neutronics_material_maker && \
@@ -155,6 +155,20 @@ RUN pip install neutronics_material_maker && \
     git checkout cmake-build-from-pip && \
     pip install .
 
-RUN apt-get -y install curl
+# RUN /opt/openmc/tools/ci/download-xs.sh
+# ENV OPENMC_CROSS_SECTIONS=/root/nndc_hdf5/cross_sections.xml
 
-ENV OPENMC_CROSS_SECTIONS=/root/nndc_hdf5/cross_sections.xml
+RUN git clone https://github.com/openmc-dev/data.git
+RUN python3 data/convert_nndc71.py --cleanup && \
+    rm -rf nndc-b7.1-endf  && \
+    rm -rf nndc-b7.1-ace/  && \
+    rm -rf nndc-b7.1-download
+RUN python3 data/convert_tendl.py --cleanup && \
+    rm -rf tendl-2019-ace/  && \
+    rm -rf tendl-2019-download
+RUN python3 data/data/combine_libraries.py -l data/nndc-b7.1-hdf5/cross_sections.xml data/tendl-2019-hdf5/cross_sections.xml -o data/cross_sections.xml
+
+RUN wget https://github.com/mit-crpg/WMP_Library/releases/download/v1.1/WMP_Library_v1.1.tar.gz
+RUN tar -xf WMP_Library_v1.1.tar.gz -C /
+
+ENV OPENMC_CROSS_SECTIONS=data/cross_sections.xml
