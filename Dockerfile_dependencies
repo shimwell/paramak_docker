@@ -16,7 +16,6 @@ RUN apt-get install -y libgl1-mesa-glx libgl1-mesa-dev libglu1-mesa-dev \
 
 RUN conda install -c conda-forge -c cadquery cadquery=2
 
-# RUN conda install -c cadquery -c conda-forge cadquery=master
 
 # the following commands are needed for pymoab installation
 
