@@ -168,4 +168,4 @@ RUN python3 data/convert_tendl.py --cleanup && \
     rm -rf tendl-2019-download
 RUN python3 data/combine_libraries.py -l nndc-b7.1-hdf5/cross_sections.xml tendl-2019-hdf5/cross_sections.xml -o cross_sections.xml
 
-ENV OPENMC_CROSS_SECTIONS=cross_sections.xml
+ENV OPENMC_CROSS_SECTIONS=/cross_sections.xml
