@@ -150,6 +150,7 @@ RUN apt-get -y install curl
 
 # the parametric-plasma-source pip install is not fully working
 RUN pip install neutronics_material_maker && \
+    pip install vtk && \
     git clone https://github.com/DanShort12/parametric-plasma-source.git && \
     cd parametric-plasma-source/ && \
     git checkout cmake-build-from-pip && \
